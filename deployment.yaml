@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: web-app
+  namespace: k8s-foundations
+
+spec:
+
+  # Run two copies of the application
+  replicas: 2
+
+  # Determines which Pods this Deployment manages
+  selector:
+    matchLabels:
+      app: web-app
+
+  # Template used to create new Pods
+  template:
+
+    metadata:
+      labels:
+        app: web-app
+
+    spec:
+      containers:
+
+        - name: nginx
+
+          # Container image Kubernetes will run
+          image: nginx:stable-alpine
+
+          ports:
+            - containerPort: 80
+
+          # Mount our ConfigMap into nginx's web directory
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html
+
+      volumes:
+
+        - name: web-content
+
+          configMap:
+            name: web-content
